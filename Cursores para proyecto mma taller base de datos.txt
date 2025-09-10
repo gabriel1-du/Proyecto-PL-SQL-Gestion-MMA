@@ -1,0 +1,100 @@
+DECLARE
+   	--varoable
+    v_evento_id NUMBER := 1;
+
+    CURSOR c_pelea_evento (p_evento_id NUMBER) IS
+        SELECT
+            p.id_pelea,
+            p.resultado,
+            p.ganador,
+            e.nombre AS nombre_evento,
+            e.fecha AS fecha_evento	
+        FROM
+            pelea p
+        JOIN
+            evento e ON p.id_evento = e.id_evento
+        WHERE
+            p.id_evento = p_evento_id; 
+            
+    v_pelea_record c_pelea_evento%ROWTYPE;
+
+BEGIN
+  	--Se abre ael cursor
+    OPEN c_pelea_evento(v_evento_id);
+
+    DBMS_OUTPUT.PUT_LINE('--- Listado de peleas para el evento ID: ' || v_evento_id || ' ---');
+
+    LOOP
+        -- Leer la siguiente fila del cursor y guardarla en la variable de tipo RECORD
+        FETCH c_pelea_evento INTO v_pelea_record;
+
+        -- Salir del loop cuando no haya más filas para procesar
+        EXIT WHEN c_pelea_evento%NOTFOUND;
+
+        -- Procesar la fila (por ejemplo, imprimir la información)
+        DBMS_OUTPUT.PUT_LINE('Pelea ID: ' || v_pelea_record.id_pelea);
+        DBMS_OUTPUT.PUT_LINE('  - Evento: ' || v_pelea_record.nombre_evento);
+        DBMS_OUTPUT.PUT_LINE('  - Fecha: ' || v_pelea_record.fecha_evento);
+        DBMS_OUTPUT.PUT_LINE('  - Resultado: ' || v_pelea_record.resultado);
+        DBMS_OUTPUT.PUT_LINE('  - Ganador ID: ' || v_pelea_record.ganador);
+        DBMS_OUTPUT.PUT_LINE('--------------------------------------------------');
+
+    END LOOP;
+
+    -- Cerrar el cursor
+    CLOSE c_pelea_evento;
+
+END;
+/
+
+
+--CURSOR POR VICTORIAS
+DECLARE
+
+    v_min_victorias NUMBER := 10;
+    v_categoria_id  NUMBER := 1;
+
+  
+    CURSOR c_peleadores_filtrados_victorias (p_min_victorias NUMBER, p_categoria_id NUMBER) IS
+        SELECT
+            p.nombre,
+            cp.nombre AS nombre_categoria,
+            p.victorias
+        FROM
+            peleador p
+        JOIN
+            categoria_peso cp ON p.id_categoria = cp.id_categoria
+        WHERE
+            p.id_categoria = p_categoria_id AND
+            p.victorias >= p_min_victorias;
+    v_peleador_info c_peleadores_filtrados_victorias%ROWTYPE;
+
+BEGIN
+    -- Abrir el cursor y pasarle los valores de las variables de entrada.
+    OPEN c_peleadores_filtrados_victorias(v_min_victorias, v_categoria_id);
+
+    -- Imprimir un encabezado informativo.
+    DBMS_OUTPUT.PUT_LINE('--- Buscando peleadores con ' || v_min_victorias || ' o más victorias en la categoría ID ' || v_categoria_id || ' ---');
+    DBMS_OUTPUT.PUT_LINE(' ');
+
+    LOOP
+        -- Leer la siguiente fila del cursor y guardarla en la variable de tipo RECORD.
+        FETCH c_peleadores_filtrados_victorias INTO v_peleador_info;
+
+        -- Salir del loop cuando no haya más filas.
+        EXIT WHEN c_peleadores_filtrados_victorias%NOTFOUND;
+
+        -- Imprimir la información de cada peleador encontrado.
+        DBMS_OUTPUT.PUT_LINE('Nombre: ' || v_peleador_info.nombre);
+        DBMS_OUTPUT.PUT_LINE('  - Categoría de peso: ' || v_peleador_info.nombre_categoria);
+        DBMS_OUTPUT.PUT_LINE('  - Victorias: ' || v_peleador_info.victorias);
+        DBMS_OUTPUT.PUT_LINE('--------------------------------------------------');
+
+    END LOOP;
+
+    -- Cerrar el cursor.
+    CLOSE c_peleadores_filtrados_victorias;
+
+END;
+/
+

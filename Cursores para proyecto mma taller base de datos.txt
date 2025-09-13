@@ -1,5 +1,6 @@
+--Cursor para buscar las pelas por evento
 DECLARE
-   	--varoable
+   	--variables
     v_evento_id NUMBER := 1;
 
     CURSOR c_pelea_evento (p_evento_id NUMBER) IS
@@ -48,7 +49,7 @@ END;
 /
 
 
---CURSOR POR VICTORIAS
+--Cursor para victorias
 DECLARE
 
     v_min_victorias NUMBER := 10;

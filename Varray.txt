@@ -1,0 +1,22 @@
+DECLARE
+   -- Definir un tipo VARRAY que guarda hasta 5 nombres de peleadores
+   TYPE top5_array IS VARRAY(5) OF VARCHAR2(100);
+
+   -- Variable del tipo VARRAY
+   v_top5 top5_array := top5_array();
+
+BEGIN
+   -- Agregar nombres de peleadores
+   v_top5.EXTEND(5);  -- Reservar espacio para 5 elementos
+   v_top5(1) := 'Islam Makhachev';
+   v_top5(2) := 'Arman Tsarukyan';
+   v_top5(3) := 'Charles Oliveira';
+   v_top5(4) := 'Dustin Poirier';
+   v_top5(5) := 'Justin Gaethje';
+
+   -- Recorrer e imprimir el array
+   FOR i IN 1..v_top5.COUNT LOOP
+      DBMS_OUTPUT.PUT_LINE('Top ' || i || ': ' || v_top5(i));
+   END LOOP;
+END;
+/

@@ -1,3 +1,17 @@
+
+CREATE OR REPLACE PACKAGE cursores_mma IS
+
+    -- Procedimiento: Listar peleas de un evento
+    PROCEDURE listar_peleas_evento (p_evento_id NUMBER);
+
+    -- Procedimiento: Listar peleadores por victorias
+    PROCEDURE listar_peleadores_victorias (p_min_victorias NUMBER, p_categoria_id NUMBER);
+
+END cursores_mma;
+/
+
+
+
 CREATE OR REPLACE PACKAGE BODY cursores_mma IS
 
     -- Procedimiento: Listar peleas de un evento

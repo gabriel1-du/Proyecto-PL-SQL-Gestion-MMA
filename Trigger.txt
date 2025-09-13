@@ -1,0 +1,30 @@
+--Disparador para guardar filas
+CREATE OR REPLACE TRIGGER tr_auditoria_peleador
+BEFORE UPDATE ON peleador
+FOR EACH ROW
+BEGIN
+    INSERT INTO peleador_auditoria (
+        id_peleador,
+        nombre,
+        apodo,
+        edad,
+        nacionalidad,
+        id_categoria,
+        victorias,
+        derrotas,
+        empates,
+        fecha_auditoria
+    ) VALUES (
+        :OLD.id_peleador,
+        :OLD.nombre,
+        :OLD.apodo,
+        :OLD.edad,
+        :OLD.nacionalidad,
+        :OLD.id_categoria,
+        :OLD.victorias,
+        :OLD.derrotas,
+        :OLD.empates,
+        SYSDATE
+    );
+END;
+/

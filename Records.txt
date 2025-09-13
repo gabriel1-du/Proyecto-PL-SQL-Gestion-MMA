@@ -1,0 +1,25 @@
+DECLARE
+   -- Definir un tipo RECORD personalizado
+   TYPE r_peleador IS RECORD (
+      nombre        peleador.nombre%TYPE,
+      categoria     categoria_peso.nombre%TYPE,
+      victorias     peleador.victorias%TYPE
+   );
+
+   -- Declarar una variable del tipo RECORD
+   v_peleador r_peleador;
+
+BEGIN
+   -- Obtener datos de un peleador en el RECORD
+   SELECT p.nombre, c.nombre, p.victorias
+   INTO v_peleador
+   FROM peleador p
+   JOIN categoria_peso c ON p.id_categoria = c.id_categoria
+   WHERE p.id_peleador = 1;
+
+   -- Mensaje
+   DBMS_OUTPUT.PUT_LINE('Nombre: ' || v_peleador.nombre);
+   DBMS_OUTPUT.PUT_LINE('Categoría: ' || v_peleador.categoria);
+   DBMS_OUTPUT.PUT_LINE('Victorias: ' || v_peleador.victorias);
+END;
+/

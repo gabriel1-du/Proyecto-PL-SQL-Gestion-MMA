@@ -1,0 +1,19 @@
+--Procedimineto para buscar eventos desde X año (Rec es de record)
+
+CREATE OR REPLACE PROCEDURE lista_eventos_desde_x_año(p_anio IN NUMBER) IS
+BEGIN
+    FOR evento_rec IN (
+        SELECT id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada
+        FROM evento
+        WHERE EXTRACT(YEAR FROM fecha) >= p_anio
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE(
+            'ID: ' || evento_rec.id_evento ||
+            ' | Nombre: ' || evento_rec.nombre ||
+            ' | Fecha: ' || TO_CHAR(evento_rec.fecha, 'DD/MM/YYYY') ||
+            ' | Lugar: ' || evento_rec.lugar ||
+            ' | Entradas vendidas ' || evento_rec.entradas_vendidas ||
+            ' | Valor de la entrada ' || evento_rec.precio_entrada 
+        );
+    END LOOP;
+END;

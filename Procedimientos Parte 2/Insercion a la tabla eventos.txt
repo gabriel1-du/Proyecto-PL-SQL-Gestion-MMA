@@ -1,0 +1,32 @@
+-- 3 eventos del mismo año (2025)
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (1, 'UFC 310: Makhachev vs Oliveira 2', TO_DATE('2025-03-15', 'YYYY-MM-DD'), 'Las Vegas - USA', 18500, 150);
+
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (2, 'UFC Fight Night: Tuivasa vs Pavlovich', TO_DATE('2025-06-10', 'YYYY-MM-DD'), 'Sydney - Australia', 12000, 90);
+
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (3, 'UFC 312: Pereira vs Hill 2', TO_DATE('2025-11-22', 'YYYY-MM-DD'), 'Miami - USA', 17500, 140);
+
+-- 2 eventos del mismo año distinto (2024)
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (4, 'UFC 299: O’Malley vs Vera 2', TO_DATE('2024-03-09', 'YYYY-MM-DD'), 'Miami - USA', 19000, 160);
+
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (5, 'UFC 300: Pereira vs Hill', TO_DATE('2024-04-13', 'YYYY-MM-DD'), 'Las Vegas - USA', 20500, 180);
+
+-- 5 eventos de años distintos
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (6, 'UFC 280: Oliveira vs Makhachev', TO_DATE('2022-10-22', 'YYYY-MM-DD'), 'Abu Dhabi - EAU', 17000, 130);
+
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (7, 'UFC 285: Jones vs Gane', TO_DATE('2023-03-04', 'YYYY-MM-DD'), 'Las Vegas - USA', 19500, 170);
+
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (8, 'UFC 276: Adesanya vs Cannonier', TO_DATE('2022-07-02', 'YYYY-MM-DD'), 'Las Vegas - USA', 16000, 120);
+
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (9, 'UFC 254: Khabib vs Gaethje', TO_DATE('2020-10-24', 'YYYY-MM-DD'), 'Abu Dhabi - EAU', 11000, 100);
+
+INSERT INTO evento (id_evento, nombre, fecha, lugar, entradas_vendidas, precio_entrada)
+VALUES (10, 'UFC 229: Khabib vs McGregor', TO_DATE('2018-10-06', 'YYYY-MM-DD'), 'Las Vegas - USA', 20500, 200);

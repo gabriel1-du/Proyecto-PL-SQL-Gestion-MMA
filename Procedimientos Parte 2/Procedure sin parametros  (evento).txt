@@ -1,0 +1,20 @@
+create or replace procedure reporte_eventos is
+begin 
+    for evento in (SELECT id_evento, nombre, fecha,
+    lugar, entradas_vendidas, precio_entrada from evento) 
+    loop
+        DBMS_OUTPUT.PUT_LINE('Id del evento: ' || evento.id_evento);
+        DBMS_OUTPUT.PUT_LINE('Nombre del evento: ' || evento.nombre);
+        DBMS_OUTPUT.PUT_LINE('Fecha del evento: ' || evento.fecha);
+        DBMS_OUTPUT.PUT_LINE('Lugar del evento: ' || evento.lugar);
+        DBMS_OUTPUT.PUT_LINE('Entradas vendidas: ' || evento.entradas_vendidas);
+        DBMS_OUTPUT.PUT_LINE('Precio de la entrada: ' || evento.precio_entrada);
+        --dbms para cada mensaje para hacer salto de linea
+    end loop;
+end;
+/
+
+begin
+    reporte_eventos;
+end;
+/

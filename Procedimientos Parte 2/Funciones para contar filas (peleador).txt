@@ -1,0 +1,17 @@
+--funcion que cuennta la cantidad de peleadores
+CREATE OR REPLACE FUNCTION total_de_peleadores RETURN NUMBER IS
+    v_total_peleadores NUMBER; --Variable tipo acumulador
+BEGIN
+    SELECT
+        COUNT(*)
+    INTO v_total_peleadores
+    FROM
+        peleador;
+
+    RETURN v_total_peleadores;
+END;
+/
+
+BEGIN
+    dbms_output.put_line('Cant de peleadores en la empresa' || total_de_peleadores);
+END;

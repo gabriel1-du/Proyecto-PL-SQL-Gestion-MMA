@@ -1,0 +1,14 @@
+CREATE OR REPLACE PROCEDURE mostrar_categorias_peso IS
+BEGIN
+    FOR cat IN (
+        SELECT Id_categoria, Nombre, Limite_inferior, Limite_superior
+        FROM CATEGORIA_PESO
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE('----------------------------------');
+        DBMS_OUTPUT.PUT_LINE('Id categoría     : ' || cat.Id_categoria);
+        DBMS_OUTPUT.PUT_LINE('Nombre categoría : ' || cat.Nombre);
+        DBMS_OUTPUT.PUT_LINE('Límite inferior  : ' || cat.Limite_inferior);
+        DBMS_OUTPUT.PUT_LINE('Límite superior  : ' || cat.Limite_superior);
+    END LOOP;
+END;
+/

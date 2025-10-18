@@ -1,0 +1,20 @@
+create or replace PROCEDURE p_record_peleador_vic(p_victorias in number, p_id in number) is
+begin
+    update peleador
+    set victorias = p_victorias
+    where id_peleador = p_id;
+    
+    IF SQL%ROWCOUNT = 0 THEN
+        DBMS_OUTPUT.PUT_LINE('No se encontraron peleadores con id: ' || p_id);
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Se actualizaron las victorias del peleador con id: ' ||
+    p_id);
+END IF;       
+end;
+/
+begin
+    p_record_peleador_vic(11,65);
+end;
+/
+select * from peleador
+where id_peleador = 65

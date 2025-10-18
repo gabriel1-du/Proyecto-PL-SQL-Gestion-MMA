@@ -111,3 +111,12 @@ CREATE TABLE peleador_auditoria (
     fecha_auditoria DATE DEFAULT SYSDATE
 );
 
+
+--Cambios en la tablas
+alter table
+    evento
+add (entradas_vendidas Number(7),
+    precio_entrada number(5));
+
+ALTER TABLE PELEADOR_AUDITORIA
+ADD tipo_modificacion VARCHAR2(20) DEFAULT 'sin especificar';

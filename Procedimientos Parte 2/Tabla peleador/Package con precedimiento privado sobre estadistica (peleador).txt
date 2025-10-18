@@ -1,0 +1,64 @@
+
+CREATE OR REPLACE PACKAGE procedimientos_peleador IS
+    PROCEDURE estadisticas_resultado(p_id_peleador NUMBER);
+END procedimientos_peleador;
+/
+CREATE OR REPLACE PACKAGE BODY procedimientos_peleador IS
+
+    -- Procedimineto privado
+    PROCEDURE calcular_porcentajes(
+        p_id_peleador NUMBER,
+        p_por_victorias OUT NUMBER,
+        p_por_derrotas OUT NUMBER,
+        p_por_empates OUT NUMBER
+    ) IS
+        v_victorias PELEADOR.Victorias%TYPE;
+        v_derrotas  PELEADOR.Derrotas%TYPE;
+        v_empates   PELEADOR.Empates%TYPE;
+        v_total     NUMBER;
+    BEGIN
+        -- Obtener los resultados del peleador
+        SELECT Victorias, Derrotas, Empates
+        INTO v_victorias, v_derrotas, v_empates 
+        FROM PELEADOR
+        WHERE Id_peleador = p_id_peleador;
+
+        v_total := v_victorias + v_derrotas + v_empates;
+
+        IF v_total = 0 THEN
+            p_por_victorias := 0;
+            p_por_derrotas  := 0;
+            p_por_empates   := 0;
+        ELSE
+            p_por_victorias := ROUND((v_victorias / v_total) * 100, 1);
+            p_por_derrotas  := ROUND((v_derrotas  / v_total) * 100, 1);
+            p_por_empates   := ROUND((v_empates   / v_total) * 100, 1);
+        END IF;
+    END calcular_porcentajes;
+
+    --   Procedimiento público: muestra estadísticas
+    PROCEDURE estadisticas_resultado(p_id_peleador NUMBER) IS
+        v_por_victorias NUMBER;
+        v_por_derrotas  NUMBER;
+        v_por_empates   NUMBER;
+        v_nombre        PELEADOR.Nombre%TYPE;
+    BEGIN
+        -- Llamar al precedimiento privada para calcular porcentajes
+        calcular_porcentajes(p_id_peleador, v_por_victorias, v_por_derrotas, v_por_empates);
+
+        -- Obtener el nombre del peleador
+        SELECT Nombre INTO v_nombre
+        FROM PELEADOR
+        WHERE Id_peleador = p_id_peleador;
+
+        -- Mostrar resultados
+        DBMS_OUTPUT.PUT_LINE('--------------------------------------------');
+        DBMS_OUTPUT.PUT_LINE('ID PELEADOR : ' || p_id_peleador);
+        DBMS_OUTPUT.PUT_LINE('NOMBRE      : ' || v_nombre);
+        DBMS_OUTPUT.PUT_LINE('VICTORIAS   : ' || v_por_victorias || '%');
+        DBMS_OUTPUT.PUT_LINE('DERROTAS    : ' || v_por_derrotas  || '%');
+        DBMS_OUTPUT.PUT_LINE('EMPATES     : ' || v_por_empates   || '%');
+    END estadisticas_resultado;
+
+END procedimientos_peleador;
+/

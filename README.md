@@ -3,8 +3,8 @@
 Este proyecto consiste en el desarrollo de un sistema de base de datos en **Oracle 21c** para la gestión integral de atletas y eventos de Artes Marciales Mixtas (MMA). La solución utiliza DDL para la creación de la estructura y **PL/SQL (Procedimientos, Funciones, Packages y Triggers)** para implementar la lógica de negocio, la automatización de procesos y la auditoría de datos.
 
 ## Integrantes
-* Claudio Salcedo
 * Gabriel Duran
+* Claudio Salcedo
 
 ## Descripción del Proyecto
 El objetivo principal es automatizar el registro, seguimiento y análisis de datos de peleadores y eventos para mejorar la toma de decisiones. Se ha creado un conjunto de procedimientos, funciones y triggers en PL/SQL que administran de forma eficiente la información deportiva y administrativa, garantizando la integridad, seguridad y escalabilidad del sistema.

@@ -1,7 +1,3 @@
-¡Por supuesto! Aquí tienes una propuesta de archivo `README.md` para tu proyecto. Este archivo está diseñado para ser claro, profesional y explicar todos los componentes de tu trabajo, incluyendo el código DDL que proporcionaste.
-
----
-
 # Proyecto de Base de Datos: Gestión de Atletas de MMA
 
 Este proyecto consiste en el desarrollo de un sistema de base de datos en **Oracle 21c** para la gestión integral de atletas y eventos de Artes Marciales Mixtas (MMA). La solución utiliza DDL para la creación de la estructura y **PL/SQL (Procedimientos, Funciones, Packages y Triggers)** para implementar la lógica de negocio, la automatización de procesos y la auditoría de datos.

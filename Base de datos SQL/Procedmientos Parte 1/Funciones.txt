@@ -1,0 +1,35 @@
+
+--Funciones
+CREATE OR REPLACE FUNCTION fn_cantidad_pelea_evento (
+    p_evento_id IN evento.id_evento%TYPE
+) RETURN NUMBER IS
+    v_cantidad NUMBER;
+BEGIN
+    -- Contar las peleas asociadas al evento
+    SELECT COUNT(*)
+    INTO v_cantidad
+    FROM pelea
+    WHERE id_evento = p_evento_id;
+
+    RETURN v_cantidad;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN 0; -- Si no encuentra nada, retorna 0
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error inesperado: ' || SQLERRM);
+        RETURN -1; -- Para indicar un error inesperado
+END;
+/
+
+
+SET SERVEROUTPUT ON;
+
+DECLARE
+    v_evento_id NUMBER := 1; -- ejemplo
+    v_cantidad  NUMBER;
+BEGIN
+    v_cantidad := fn_cantidad_pelea_evento(v_evento_id);
+    DBMS_OUTPUT.PUT_LINE('El evento con ID ' || v_evento_id || ' tiene ' || v_cantidad || ' peleas.');
+END;
+/

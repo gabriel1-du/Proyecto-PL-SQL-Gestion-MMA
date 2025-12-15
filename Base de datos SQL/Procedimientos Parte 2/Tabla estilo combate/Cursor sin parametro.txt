@@ -1,0 +1,48 @@
+
+DECLARE
+    
+    TYPE r_estadistica IS RECORD (
+        estilo_nombre   estilo_combate.nombre%TYPE,
+        total_luchadores NUMBER
+    );
+
+    -- Variable basada en el record
+    v_stats r_estadistica;
+
+    CURSOR c_conteo_estilos IS
+        SELECT e.nombre, COUNT(p.id_peleador)
+        FROM estilo_combate e
+        LEFT JOIN peleador p ON e.id_estilo = p.id_estilo
+        GROUP BY e.nombre
+        ORDER BY COUNT(p.id_peleador) DESC; -- Opcional: Para que salgan los más populares primero
+
+BEGIN
+    --Apertura
+    OPEN c_conteo_estilos;
+
+    DBMS_OUTPUT.PUT_LINE('=== REPORTE DE POPULARIDAD DE ESTILOS ===');
+
+    LOOP
+        -- Uso de fetch como ciclo
+        FETCH c_conteo_estilos INTO v_stats;
+        EXIT WHEN c_conteo_estilos%NOTFOUND;
+
+        -- Mensaje personalizado
+        DBMS_OUTPUT.PUT_LINE('Estilo: ' || RPAD(v_stats.estilo_nombre, 25, ' ') || 
+                             ' | Practicantes activos: ' || v_stats.total_luchadores);
+        
+        -- Mensaje en mas descriptivo
+        IF v_stats.total_luchadores > 5 THEN
+            DBMS_OUTPUT.PUT_LINE('   -> ¡Es una disciplina muy popular!');
+        ELSIF v_stats.total_luchadores = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('   -> (Sin representantes actualmente)');
+        END IF;
+        
+        DBMS_OUTPUT.PUT_LINE('-------------------------------------------');
+
+    END LOOP;
+
+    --Limpieza
+    CLOSE c_conteo_estilos;
+END;
+/

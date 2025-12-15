@@ -1,0 +1,31 @@
+--Proceso almacenado
+CREATE OR REPLACE PROCEDURE contar_peleadores_por_categoria IS
+    CURSOR c_categoria IS
+        SELECT cp.id_categoria, cp.nombre
+        FROM categoria_peso cp;
+
+    v_id_categoria categoria_peso.id_categoria%TYPE;
+    v_nombre_cat   categoria_peso.nombre%TYPE;
+    v_total        NUMBER;
+BEGIN
+    OPEN c_categoria;
+
+    LOOP
+        FETCH c_categoria INTO v_id_categoria, v_nombre_cat;
+        EXIT WHEN c_categoria%NOTFOUND;
+
+        -- contar peleadores en la categoría
+        SELECT COUNT(*)
+        INTO v_total
+        FROM peleador p
+        WHERE p.id_categoria = v_id_categoria;
+
+        -- mostrar resultado
+        DBMS_OUTPUT.PUT_LINE('Categoría: ' || v_nombre_cat ||
+                             ' (ID ' || v_id_categoria || ') -> ' ||
+                             v_total || ' peleadores');
+    END LOOP;
+
+    CLOSE c_categoria;
+END contar_peleadores_por_categoria;
+/

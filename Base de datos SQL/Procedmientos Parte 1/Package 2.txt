@@ -1,0 +1,319 @@
+pkg peleador (exceptions incluidas)
+
+CREATE OR REPLACE PACKAGE pkg_peleador AS
+    e_peleador_duplicado EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_peleador_duplicado, -1);
+
+    TYPE rec_peleador IS RECORD (
+        id_peleador peleador.id_peleador%TYPE,
+        nombre peleador.nombre%TYPE,
+        apodo peleador.apodo%TYPE,
+        edad peleador.edad%TYPE,
+        nacionalidad peleador.nacionalidad%TYPE,
+        id_categoria peleador.id_categoria%TYPE,
+        victorias peleador.victorias%TYPE,
+        derrotas peleador.derrotas%TYPE,
+        empates peleador.empates%TYPE
+    );
+    TYPE varr_peleador IS VARRAY(100) OF rec_peleador;
+
+    PROCEDURE insertar(p_nombre VARCHAR2, p_apodo VARCHAR2, p_edad NUMBER, p_nacionalidad VARCHAR2, p_id_categoria NUMBER);
+    PROCEDURE actualizar(p_id NUMBER, p_nombre VARCHAR2, p_apodo VARCHAR2, p_edad NUMBER, p_nacionalidad VARCHAR2, p_id_categoria NUMBER);
+    PROCEDURE eliminar(p_id NUMBER);
+
+    FUNCTION buscar_por_categoria(p_id_categoria NUMBER) RETURN varr_peleador;
+    FUNCTION historial_peleas(p_id NUMBER) RETURN SYS_REFCURSOR;
+    PROCEDURE registrar_con_estilos(p_nombre VARCHAR2, p_apodo VARCHAR2, p_edad NUMBER, p_nacionalidad VARCHAR2, p_id_categoria NUMBER, p_estilos SYS.ODCINUMBERLIST);
+END pkg_peleador;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_peleador AS
+    PROCEDURE insertar(p_nombre VARCHAR2, p_apodo VARCHAR2, p_edad NUMBER, p_nacionalidad VARCHAR2, p_id_categoria NUMBER) IS
+        v_exists NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_exists FROM peleador WHERE nombre = p_nombre AND apodo = NVL(p_apodo,'-');
+        IF v_exists > 0 THEN
+            RAISE e_peleador_duplicado;
+        END IF;
+
+        INSERT INTO peleador(nombre, apodo, edad, nacionalidad, id_categoria)
+        VALUES (p_nombre, p_apodo, p_edad, p_nacionalidad, p_id_categoria);
+    END;
+
+    PROCEDURE actualizar(p_id NUMBER, p_nombre VARCHAR2, p_apodo VARCHAR2, p_edad NUMBER, p_nacionalidad VARCHAR2, p_id_categoria NUMBER) IS
+        v_exists NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_exists FROM peleador WHERE id_peleador = p_id;
+        IF v_exists = 0 THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Peleador no existe');
+        END IF;
+
+        UPDATE peleador
+        SET nombre = p_nombre, apodo = p_apodo, edad = p_edad, nacionalidad = p_nacionalidad, id_categoria = p_id_categoria
+        WHERE id_peleador = p_id;
+    END;
+
+    PROCEDURE eliminar(p_id NUMBER) IS
+    BEGIN
+        DELETE FROM peleador WHERE id_peleador = p_id;
+        IF SQL%ROWCOUNT = 0 THEN
+            RAISE_APPLICATION_ERROR(-20002, 'No se encontró el peleador a eliminar');
+        END IF;
+    END;
+
+    FUNCTION buscar_por_categoria(p_id_categoria NUMBER) RETURN varr_peleador IS
+        v_result varr_peleador := varr_peleador();
+    BEGIN
+        SELECT id_peleador, nombre, apodo, edad, nacionalidad, id_categoria, victorias, derrotas, empates
+        BULK COLLECT INTO v_result
+        FROM peleador
+        WHERE id_categoria = p_id_categoria;
+        RETURN v_result;
+    END;
+
+    FUNCTION historial_peleas(p_id NUMBER) RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR
+            SELECT p.id_pelea, e.nombre evento, p.resultado, p.ganador
+            FROM pelea p
+            JOIN evento e ON p.id_evento = e.id_evento
+            WHERE p.id_peleador1 = p_id OR p.id_peleador2 = p_id;
+        RETURN v_cursor;
+    END;
+
+    PROCEDURE registrar_con_estilos(p_nombre VARCHAR2, p_apodo VARCHAR2, p_edad NUMBER, p_nacionalidad VARCHAR2, p_id_categoria NUMBER, p_estilos SYS.ODCINUMBERLIST) IS
+        v_id NUMBER;
+    BEGIN
+        insertar(p_nombre, p_apodo, p_edad, p_nacionalidad, p_id_categoria);
+        SELECT id_peleador INTO v_id FROM peleador WHERE nombre = p_nombre AND apodo = NVL(p_apodo,'-') FETCH FIRST 1 ROWS ONLY;
+        FOR i IN 1..p_estilos.COUNT LOOP
+            INSERT INTO peleador_estilo(id_peleador, id_estilo)
+            VALUES (v_id, p_estilos(i));
+        END LOOP;
+    END;
+END pkg_peleador;
+/
+
+
+
+
+
+
+
+
+
+
+pkg ranking (con validaciones de posición)
+
+CREATE OR REPLACE PACKAGE pkg_ranking AS
+    e_posicion_ocupada EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_posicion_ocupada, -1);
+
+    PROCEDURE actualizar_libra_libra(p_id_peleador NUMBER, p_posicion NUMBER);
+    PROCEDURE actualizar_categoria(p_id_categoria NUMBER, p_id_peleador NUMBER, p_posicion NUMBER);
+    FUNCTION obtener_libra_libra RETURN SYS_REFCURSOR;
+    FUNCTION obtener_categoria(p_id_categoria NUMBER) RETURN SYS_REFCURSOR;
+END pkg_ranking;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_ranking AS
+    PROCEDURE actualizar_libra_libra(p_id_peleador NUMBER, p_posicion NUMBER) IS
+        v_exists NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_exists FROM ranking_libra_libra
+        WHERE posicion = p_posicion AND TRUNC(fecha) = TRUNC(SYSDATE);
+        IF v_exists > 0 THEN
+            RAISE_APPLICATION_ERROR(-20010, 'Posición ya ocupada en ranking libra por libra');
+        END IF;
+
+        INSERT INTO ranking_libra_libra(id_peleador, posicion, fecha)
+        VALUES (p_id_peleador, p_posicion, SYSDATE);
+    END;
+
+    PROCEDURE actualizar_categoria(p_id_categoria NUMBER, p_id_peleador NUMBER, p_posicion NUMBER) IS
+        v_exists NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO v_exists FROM ranking_categoria
+        WHERE id_categoria = p_id_categoria AND posicion = p_posicion AND TRUNC(fecha) = TRUNC(SYSDATE);
+        IF v_exists > 0 THEN
+            RAISE_APPLICATION_ERROR(-20011, 'Posición ya ocupada en ranking de categoría');
+        END IF;
+
+        INSERT INTO ranking_categoria(id_categoria, id_peleador, posicion, fecha)
+        VALUES (p_id_categoria, p_id_peleador, p_posicion, SYSDATE);
+    END;
+
+    FUNCTION obtener_libra_libra RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR SELECT * FROM ranking_libra_libra ORDER BY posicion;
+        RETURN v_cursor;
+    END;
+
+    FUNCTION obtener_categoria(p_id_categoria NUMBER) RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR SELECT * FROM ranking_categoria WHERE id_categoria = p_id_categoria ORDER BY posicion;
+        RETURN v_cursor;
+    END;
+END pkg_ranking;
+/
+
+
+
+pkg categoría peso
+
+
+CREATE OR REPLACE PACKAGE pkg_categoria_peso AS
+    PROCEDURE insertar(p_nombre VARCHAR2, p_inf NUMBER, p_sup NUMBER);
+    PROCEDURE actualizar(p_id NUMBER, p_nombre VARCHAR2, p_inf NUMBER, p_sup NUMBER);
+    PROCEDURE eliminar(p_id NUMBER);
+    FUNCTION listar RETURN SYS_REFCURSOR;
+END pkg_categoria_peso;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_categoria_peso AS
+    PROCEDURE insertar(p_nombre VARCHAR2, p_inf NUMBER, p_sup NUMBER) IS
+    BEGIN
+        INSERT INTO categoria_peso(nombre, limite_inferior, limite_superior)
+        VALUES (p_nombre, p_inf, p_sup);
+    END;
+
+    PROCEDURE actualizar(p_id NUMBER, p_nombre VARCHAR2, p_inf NUMBER, p_sup NUMBER) IS
+    BEGIN
+        UPDATE categoria_peso
+        SET nombre = p_nombre, limite_inferior = p_inf, limite_superior = p_sup
+        WHERE id_categoria = p_id;
+    END;
+
+    PROCEDURE eliminar(p_id NUMBER) IS
+    BEGIN
+        DELETE FROM categoria_peso WHERE id_categoria = p_id;
+    END;
+
+    FUNCTION listar RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR SELECT * FROM categoria_peso;
+        RETURN v_cursor;
+    END;
+END pkg_categoria_peso;
+/
+
+
+
+
+
+
+
+pkg estilo combate
+
+CREATE OR REPLACE PACKAGE pkg_estilo_combate AS
+    PROCEDURE insertar(p_nombre VARCHAR2);
+    PROCEDURE eliminar(p_id NUMBER);
+    FUNCTION listar RETURN SYS_REFCURSOR;
+END pkg_estilo_combate;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_estilo_combate AS
+    PROCEDURE insertar(p_nombre VARCHAR2) IS
+    BEGIN
+        INSERT INTO estilo_combate(nombre) VALUES (p_nombre);
+    END;
+
+    PROCEDURE eliminar(p_id NUMBER) IS
+    BEGIN
+        DELETE FROM estilo_combate WHERE id_estilo = p_id;
+    END;
+
+    FUNCTION listar RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR SELECT * FROM estilo_combate;
+        RETURN v_cursor;
+    END;
+END pkg_estilo_combate;
+/
+
+
+
+
+
+pkg evento
+
+
+
+CREATE OR REPLACE PACKAGE pkg_evento AS
+    PROCEDURE insertar(p_nombre VARCHAR2, p_fecha DATE, p_lugar VARCHAR2);
+    FUNCTION listar RETURN SYS_REFCURSOR;
+    PROCEDURE registrar_con_peleas(p_nombre VARCHAR2, p_fecha DATE, p_lugar VARCHAR2, p_peleas SYS_REFCURSOR);
+END pkg_evento;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_evento AS
+    PROCEDURE insertar(p_nombre VARCHAR2, p_fecha DATE, p_lugar VARCHAR2) IS
+    BEGIN
+        INSERT INTO evento(nombre, fecha, lugar) VALUES (p_nombre, p_fecha, p_lugar);
+    END;
+
+    FUNCTION listar RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR SELECT * FROM evento;
+        RETURN v_cursor;
+    END;
+
+    PROCEDURE registrar_con_peleas(p_nombre VARCHAR2, p_fecha DATE, p_lugar VARCHAR2, p_peleas SYS_REFCURSOR) IS
+        v_id NUMBER;
+        v_p1 NUMBER; v_p2 NUMBER;
+    BEGIN
+        INSERT INTO evento(nombre, fecha, lugar) VALUES (p_nombre, p_fecha, p_lugar)
+        RETURNING id_evento INTO v_id;
+        LOOP
+            FETCH p_peleas INTO v_p1, v_p2;
+            EXIT WHEN p_peleas%NOTFOUND;
+            INSERT INTO pelea(id_evento, id_peleador1, id_peleador2) VALUES (v_id, v_p1, v_p2);
+        END LOOP;
+        CLOSE p_peleas;
+    END;
+END pkg_evento;
+/
+
+
+
+
+
+pkg pelea
+
+
+CREATE OR REPLACE PACKAGE pkg_pelea AS
+    PROCEDURE insertar(p_evento NUMBER, p_p1 NUMBER, p_p2 NUMBER);
+    PROCEDURE actualizar_resultado(p_id NUMBER, p_resultado VARCHAR2, p_ganador NUMBER);
+    FUNCTION listar_por_evento(p_evento NUMBER) RETURN SYS_REFCURSOR;
+END pkg_pelea;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_pelea AS
+    PROCEDURE insertar(p_evento NUMBER, p_p1 NUMBER, p_p2 NUMBER) IS
+    BEGIN
+        INSERT INTO pelea(id_evento, id_peleador1, id_peleador2)
+        VALUES (p_evento, p_p1, p_p2);
+    END;
+
+    PROCEDURE actualizar_resultado(p_id NUMBER, p_resultado VARCHAR2, p_ganador NUMBER) IS
+    BEGIN
+        UPDATE pelea
+        SET resultado = p_resultado, ganador = p_ganador
+        WHERE id_pelea = p_id;
+    END;
+
+    FUNCTION listar_por_evento(p_evento NUMBER) RETURN SYS_REFCURSOR IS
+        v_cursor SYS_REFCURSOR;
+    BEGIN
+        OPEN v_cursor FOR SELECT * FROM pelea WHERE id_evento = p_evento;
+        RETURN v_cursor;
+    END;
+END pkg_pelea;
+/
+

@@ -1,0 +1,96 @@
+--Categoria que inexistente (No data found)
+DECLARE
+    -- No es necesario declarar una excepción propia
+    v_categoria_id categoria_peso.id_categoria%TYPE := 99;  
+    v_nombre_categoria categoria_peso.nombre%TYPE;
+BEGIN
+    -- Intentar obtener la categoría
+    SELECT nombre INTO v_nombre_categoria
+    FROM categoria_peso
+    WHERE id_categoria = v_categoria_id;
+
+    DBMS_OUTPUT.PUT_LINE('Categoría válida: ' || v_nombre_categoria);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        -- Manejar directamente la excepción de Oracle
+        DBMS_OUTPUT.PUT_LINE('Error: La categoría con ID ' || v_categoria_id || ' no existe.');
+    
+    WHEN OTHERS THEN
+        -- Capturar cualquier otro error inesperado
+        DBMS_OUTPUT.PUT_LINE('Error inesperado: ' || SQLERRM);
+END;
+/
+
+
+--Evento inexistente (No data Found)
+DECLARE
+    v_evento_id evento.id_evento%TYPE := 200; --Ingresar el id del evento
+    v_nombre_evento evento.nombre%TYPE;
+BEGIN
+    -- Intentar obtener el evento
+    SELECT nombre INTO v_nombre_evento
+    FROM evento
+    WHERE id_evento = v_evento_id;
+
+    DBMS_OUTPUT.PUT_LINE('Evento válido: ' || v_nombre_evento);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        -- Manejar directamente la excepción de Oracle.
+        DBMS_OUTPUT.PUT_LINE('Error: El evento con ID ' || v_evento_id || ' no existe.');
+    
+    WHEN OTHERS THEN
+        -- Capturar cualquier otro error inesperado.
+        DBMS_OUTPUT.PUT_LINE('Error inesperado: ' || SQLERRM);
+END;
+/
+
+
+--Valores Negativos(Excepción personalizada)
+
+DECLARE
+    ex_valor_negativo EXCEPTION;
+    v_victorias peleador.victorias%TYPE := -3; -- probar con valor negativo
+BEGIN
+    -- Validar que las victorias no sean negativas
+    IF v_victorias < 0 THEN
+        RAISE ex_valor_negativo;
+    END IF;
+
+    DBMS_OUTPUT.PUT_LINE('Victorias válidas: ' || v_victorias);
+
+EXCEPTION
+    WHEN ex_valor_negativo THEN
+        DBMS_OUTPUT.PUT_LINE('Error: No se pueden registrar valores negativos (' || v_victorias || ').');
+    
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error inesperado: ' || SQLERRM);
+END;
+DECLARE
+   -- Variables
+   ex_edad_invalida EXCEPTION;
+
+   -- Variables simulando datos de un peleador
+   v_nombre   VARCHAR2(100) := 'Peleador Prueba';
+   v_edad     NUMBER := -5; -- valor inválido para probar
+
+BEGIN
+   -- Validar que la edad no sea negativa
+   IF v_edad < 0 THEN
+      RAISE ex_edad_invalida;
+   END IF;
+
+   -- Mensaje
+   DBMS_OUTPUT.PUT_LINE('Peleador registrado: ' || v_nombre);
+
+EXCEPTION
+   WHEN ex_edad_invalida THEN
+      DBMS_OUTPUT.PUT_LINE('Error: La edad del peleador no puede ser negativa.');
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Error inesperado: ' || SQLERRM);
+END;
+/
+
+
+--

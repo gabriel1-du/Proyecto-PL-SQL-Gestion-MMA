@@ -1,0 +1,45 @@
+-- Activa salida
+SET SERVEROUTPUT ON SIZE 1000000
+
+BEGIN
+  -- Materialized views
+  FOR r IN (SELECT mview_name FROM user_mviews) LOOP
+    BEGIN
+      DBMS_OUTPUT.PUT_LINE('Dropping materialized view: ' || r.mview_name);
+      EXECUTE IMMEDIATE 'DROP MATERIALIZED VIEW "' || r.mview_name || '"';
+    EXCEPTION WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Error dropping mview ' || r.mview_name || ': ' || SQLERRM);
+    END;
+  END LOOP;
+
+  -- Views
+  FOR r IN (SELECT view_name FROM user_views) LOOP
+    BEGIN
+      DBMS_OUTPUT.PUT_LINE('Dropping view: ' || r.view_name);
+      EXECUTE IMMEDIATE 'DROP VIEW "' || r.view_name || '"';
+    EXCEPTION WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Error dropping view ' || r.view_name || ': ' || SQLERRM);
+    END;
+  END LOOP;
+
+  -- Tables
+  FOR r IN (SELECT table_name FROM user_tables) LOOP
+    BEGIN
+      DBMS_OUTPUT.PUT_LINE('Dropping table: ' || r.table_name);
+      EXECUTE IMMEDIATE 'DROP TABLE "' || r.table_name || '" CASCADE CONSTRAINTS PURGE';
+    EXCEPTION WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Error dropping table ' || r.table_name || ': ' || SQLERRM);
+    END;
+  END LOOP;
+
+  -- Sequences (opcionales)
+  FOR r IN (SELECT sequence_name FROM user_sequences) LOOP
+    BEGIN
+      DBMS_OUTPUT.PUT_LINE('Dropping sequence: ' || r.sequence_name);
+      EXECUTE IMMEDIATE 'DROP SEQUENCE "' || r.sequence_name || '"';
+    EXCEPTION WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Error dropping sequence ' || r.sequence_name || ': ' || SQLERRM);
+    END;
+  END LOOP;
+END;
+/

@@ -1,0 +1,18 @@
+CREATE OR REPLACE TRIGGER trg_validar_categoria_peleador
+BEFORE INSERT OR UPDATE ON PELEADOR
+FOR EACH ROW
+DECLARE
+    v_existe_categoria NUMBER;
+BEGIN
+    -- Verificar si la categoría existe
+    SELECT COUNT(*)
+    INTO v_existe_categoria
+    FROM CATEGORIA_PESO
+    WHERE Id_categoria = :NEW.Id_categoria;
+
+    -- Si no existe, lanzar excepción personalizada
+    IF v_existe_categoria = 0 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Categoria de peso inexistente.');
+    END IF;
+END;
+/

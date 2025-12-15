@@ -1,0 +1,43 @@
+
+
+CREATE OR REPLACE TRIGGER trg_auditoria_peleador
+AFTER UPDATE OR DELETE ON PELEADOR
+FOR EACH ROW
+DECLARE
+    v_tipo_modificacion VARCHAR2(20);
+BEGIN
+    -- Determinar el tipo de modificación
+    IF UPDATING THEN
+        v_tipo_modificacion := 'UPDATE';
+    ELSIF DELETING THEN
+        v_tipo_modificacion := 'DELETE';
+    END IF;
+
+    -- Insertar registro en la tabla de auditoría
+    INSERT INTO PELEADOR_AUDITORIA (
+        Id_peleador,
+        Nombre,
+        Apodo,
+        Edad,
+        Nacionalidad,
+        Id_categoria,
+        Victorias,
+        Derrotas,
+        Empates,
+        Fecha_auditoria,
+        tipo_modificacion
+    )
+    VALUES (
+        :OLD.Id_peleador,
+        :OLD.Nombre,
+        :OLD.Apodo,
+        :OLD.Edad,
+        :OLD.Nacionalidad,
+        :OLD.Id_categoria,
+        :OLD.Victorias,
+        :OLD.Derrotas,
+        :OLD.Empates,
+        SYSDATE,
+        v_tipo_modificacion
+    );
+END;

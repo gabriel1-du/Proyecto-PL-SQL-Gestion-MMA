@@ -1,0 +1,67 @@
+-- Categorías de peso (supuesto)
+INSERT INTO categoria_peso (nombre, limite_inferior, limite_superior) VALUES ('Flyweight', 52.6, 56.7);
+INSERT INTO categoria_peso (nombre, limite_inferior, limite_superior) VALUES ('Bantamweight', 56.8, 61.2);
+INSERT INTO categoria_peso (nombre, limite_inferior, limite_superior) VALUES ('Featherweight', 61.3, 65.8);
+INSERT INTO categoria_peso (nombre, limite_inferior, limite_superior) VALUES ('Lightweight', 65.9, 70.3);
+INSERT INTO categoria_peso (nombre, limite_inferior, limite_superior) VALUES ('Welterweight', 70.4, 77.1);
+
+-- Peleadores (Top 5 por división)
+-- Flyweight
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria, victorias, derrotas, empates)
+VALUES ('Alexandre Pantoja', 'The Cannibal', 35, 'Brasil', (SELECT id_categoria FROM categoria_peso WHERE nombre='Flyweight'), 30, 5, 0);
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Joshua Van', NULL, 28, 'EEUU', (SELECT id_categoria FROM categoria_peso WHERE nombre='Flyweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Brandon Royval', NULL, 30, 'EEUU', (SELECT id_categoria FROM categoria_peso WHERE nombre='Flyweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Brandon Moreno', NULL, 31, 'México', (SELECT id_categoria FROM categoria_peso WHERE nombre='Flyweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Kai Kara-France', NULL, 29, 'Nueva Zelanda', (SELECT id_categoria FROM categoria_peso WHERE nombre='Flyweight'));
+
+-- Bantamweight
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Merab Dvalishvili', 'The Machine', 34, 'Georgia/EEUU', (SELECT id_categoria FROM categoria_peso WHERE nombre='Bantamweight'), 20, 4, 0);
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Sean O''Malley', NULL, 27, 'EEUU', (SELECT id_categoria FROM categoria_peso WHERE nombre='Bantamweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Petr Yan', NULL, 32, 'Rusia', (SELECT id_categoria FROM categoria_peso WHERE nombre='Bantamweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Umar Nurmagomedov', NULL, 26, 'Rusia', (SELECT id_categoria FROM categoria_peso WHERE nombre='Bantamweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Cory Sandhagen', NULL, 31, 'EEUU', (SELECT id_categoria FROM categoria_peso WHERE nombre='Bantamweight'));
+
+-- Lightweight
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Islam Makhachev', NULL, 33, 'Rusia', (SELECT id_categoria FROM categoria_peso WHERE nombre='Lightweight'), 27, 1, 0);
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Ilia Topuria', 'El Matador', 26, 'España/Ecuador', (SELECT id_categoria FROM categoria_peso WHERE nombre='Lightweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Charles Oliveira', NULL, 36, 'Brasil', (SELECT id_categoria FROM categoria_peso WHERE nombre='Lightweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Max Holloway', NULL, 32, 'EEUU', (SELECT id_categoria FROM categoria_peso WHERE nombre='Lightweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Justin Gaethje', NULL, 35, 'EEUU', (SELECT id_categoria FROM categoria_peso WHERE nombre='Lightweight'));
+
+-- Welterweight
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Jack Della Maddalena', NULL, 30, 'Australia', (SELECT id_categoria FROM categoria_peso WHERE nombre='Welterweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Belal Muhammad', NULL, 33, 'EEUU', (SELECT id_categoria FROM categoria_peso WHERE nombre='Welterweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Shavkat Rakhmonov', NULL, 29, 'Kazajistán', (SELECT id_categoria FROM categoria_peso WHERE nombre='Welterweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Sean Brady', NULL, 30, 'EEUU', (SELECT id_categoria FROM categoria_peso WHERE nombre='Welterweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Leon Edwards', NULL, 32, 'Reino Unido', (SELECT id_categoria FROM categoria_peso WHERE nombre='Welterweight'));
+
+-- Featherweight
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Ilia Topuria', 'El Matador', 26, 'España/Ecuador', (SELECT id_categoria FROM categoria_peso WHERE nombre='Featherweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Yair Rodriguez', NULL, 30, 'México', (SELECT id_categoria FROM categoria_peso WHERE nombre='Featherweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Diego Lopes', NULL, 28, 'Brasil', (SELECT id_categoria FROM categoria_peso WHERE nombre='Featherweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Movsar Evloev', NULL, 31, 'Rusia', (SELECT id_categoria FROM categoria_peso WHERE nombre='Featherweight'));
+INSERT INTO peleador (nombre, apodo, edad, nacionalidad, id_categoria)
+VALUES ('Lerone Murphy', NULL, 30, 'Reino Unido', (SELECT id_categoria FROM categoria_peso WHERE nombre='Featherweight'));
